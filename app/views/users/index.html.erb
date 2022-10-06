@@ -1,0 +1,96 @@
+<p id="notice"><%= notice %></p>
+<%= link_to 'New User', new_user_path %>
+<button id="selection_delete">Delete selected</button>
+<button id="delete_all">Delete all</button>
+
+</div>
+
+<h1>Users</h1>
+<table border="1">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Dob</th>
+      <th>Active</th>
+      <th>Roles</th>
+      <th colspan="3">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.phone_number %></td>
+        <td><%= user.email %></td>
+        <td><%= user.dob %></td>
+        <td><%= user.active %></td>
+        <td><%= user.roles.present? ? user.roles.pluck(:name).join(',').capitalize : '' %></td>
+        <td><%= link_to 'Show', user %></td>
+        <td><%= link_to 'Edit', edit_user_path(user) %></td>
+        <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td>
+          <input type="checkbox" class="child" id="<%= user.id.to_s + 'user-id-checkbox' %> " onchange="setUserId(<%= user.id %>)" name="accept" value="yes">
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+  var idArr = []
+  // Handle selected row
+  function setUserId(user_id) {
+    const rowId = user_id.toString().concat('user-id-checkbox ')
+    const cb = document.getElementById(rowId);
+      if (cb.checked) {
+        idArr.push(user_id)
+      } else {
+        const index = idArr.indexOf(user_id)
+        idArr.splice(index, 1)
+      }
+  }
+  // Handle selected delete
+    $("#selection_delete").on('click', function(){
+      if (confirm("Are you sure to delete") == true) {
+      $.ajax({
+        url: "/users/delete_user_by_selection",
+        data: {
+          user_ids: idArr
+        },
+        success: function (response) {
+          if (response.success) {
+            alert(response.message)
+            location.reload();
+          } else {
+            alert(response.message)
+          }
+        },
+        dataType: "json"
+      })
+    }
+    })
+
+  // Handle all delete
+    $("#delete_all").on('click', function () {
+      if (confirm("Are you sure to delete") == true) {
+      $.ajax({
+        url: "/users/delete_user_by_selection",
+        data: {
+          user_ids: 'all'
+        },
+        success: function (response) {
+          if (response.success) {
+            alert(response.message)
+            location.reload();
+          } else {
+            alert(response.message)
+          }
+        },
+        dataType: "json"
+      })
+      }
+    })
+</script>

@@ -1,0 +1,48 @@
+<%= form_with(model: user) do |form| %>
+  <% if user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+        <% user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+  <div class="field">
+    <%= form.label :phone_number %>
+    <%= form.text_field :phone_number %>
+  </div>
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.text_field :email %>
+  </div>
+  <div class="field">
+    <%= form.label :dob %>
+    <%= form.date_field :dob %>
+  </div>
+  <div class="field">
+    <%= form.label :active %>
+    True: <%= form.radio_button :active, 'true' %>
+    False: <%= form.radio_button :active, 'false' %>
+  </div>
+    <select name="user[roles][]" multiple>
+      <option value="">Select role</option>
+      <% @roles.each do |role| %>
+        <% if user&.roles.present? && user.roles.pluck(:name).include?(role)%>
+          <option value="<%= role %>" selected><%= role.capitalize %></option>
+          <% else %>
+          <option value="<%= role %>"><%= role.capitalize %></option>
+          <% end %>
+        <% end %>
+    </select>
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
